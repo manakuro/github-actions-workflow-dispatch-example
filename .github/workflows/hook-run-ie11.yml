@@ -7,7 +7,7 @@ on:
 jobs:
   run-ie11:
     if: contains(github.event.comment.html_url, '/pull/') && startsWith(github.event.comment.body, '/run:ie11')
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: get upstream branch
         id: upstreambranch
@@ -19,13 +19,23 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ steps.upstreambranch.outputs.branchname }}
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.19.0
+      - run: yarn install --no-lockfile --silent
       - id: test
-        run: yarn build
+        run: |
+          build=$(yarn build)
+          build="${build//'%'/'%25'}"
+          build="${build//$'\n'/'%0A'}"
+          build="${build//$'\r'/'%0D'}"
+          echo "::set-output name=build::$build"
+        continue-on-error: true
       - name: Success message
         uses: actions/github-script@0.9.0
         if: steps.test.outputs.exitcode == 0
         env:
-          STDOUT: "```${{ steps.test.outputs.stdout }}```"
+          STDOUT: "```\n${{ steps.test.outputs.build }}\n```"
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
@@ -33,5 +43,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: "#### `echo test` succeed\n" + process.env.STDOUT
+              body: "#### `yarn build` succeed\n" + process.env.STDOUT
             })
