@@ -20,8 +20,8 @@ jobs:
         with:
           ref: ${{ steps.upstreambranch.outputs.branchname }}
       - id: test
-      - run: node test.js
-      - name: plan success message
+        run: yarn build
+      - name: Success message
         uses: actions/github-script@0.9.0
         if: steps.test.outputs.exitcode == 0
         env:
@@ -35,4 +35,3 @@ jobs:
               repo: context.repo.repo,
               body: "#### `echo test` succeed\n" + process.env.STDOUT
             })
-
