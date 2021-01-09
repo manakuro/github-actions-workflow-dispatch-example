@@ -20,7 +20,7 @@ jobs:
         with:
           ref: ${{ steps.upstreambranch.outputs.branchname }}
       - id: test
-      - run: node test.js
+        run: node test.js
       - name: plan success message
         uses: actions/github-script@0.9.0
         if: steps.test.outputs.exitcode == 0
