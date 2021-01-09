@@ -25,6 +25,8 @@ jobs:
       - run: yarn install --no-lockfile --silent
       - id: test
         run: yarn build
+        continue-on-error: true
+      - run: echo ${{ steps.test.outputs.stdout }}
       - name: Success message
         uses: actions/github-script@0.9.0
         if: steps.test.outputs.exitcode == 0
