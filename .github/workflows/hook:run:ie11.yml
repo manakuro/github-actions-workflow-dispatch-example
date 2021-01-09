@@ -19,12 +19,13 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ steps.upstreambranch.outputs.branchname }}
+      - id: test
       - run: node test.js
       - name: plan success message
         uses: actions/github-script@0.9.0
-        if: steps.plan.outputs.exitcode == 0
+        if: steps.test.outputs.exitcode == 0
         env:
-          STDOUT: "```${{ steps.plan.outputs.stdout }}```"
+          STDOUT: "```${{ steps.test.outputs.stdout }}```"
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
