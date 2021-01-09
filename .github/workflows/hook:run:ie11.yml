@@ -34,7 +34,7 @@ jobs:
         uses: actions/github-script@0.9.0
         if: steps.test.outputs.exitcode == 0
         env:
-          STDOUT: "```${{join(steps.test.outputs.*, '\n')}}```"
+          STDOUT: "```${{ steps.test.outputs.build }}```"
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
