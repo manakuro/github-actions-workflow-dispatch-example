@@ -26,7 +26,7 @@ jobs:
       - id: test
         run: |
           build=$(yarn build)
-          build="${build//$'\n'/\\n}"
+          build="${build//$'\n'/\<br\>}"
           echo "::set-output name=build::$build"
         continue-on-error: true
       - run: echo ${{ steps.test.outputs.build }}
