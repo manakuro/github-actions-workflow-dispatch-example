@@ -3,7 +3,6 @@ name: hook:run:ie11
 on:
   issue_comment:
     types: [created]
-    
 defaults:
   run:
     shell: bash
@@ -51,5 +50,3 @@ jobs:
               repo: context.repo.repo,
               body: "#### `yarn build` succeed\n" + process.env.STDOUT
             })
-          shell: bash
-
