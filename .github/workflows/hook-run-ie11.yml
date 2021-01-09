@@ -50,3 +50,17 @@ jobs:
               repo: context.repo.repo,
               body: "#### `yarn build` succeed\n" + process.env.STDOUT
             })
+      - name: Error message
+        uses: actions/github-script@0.9.0
+        if: steps.test.outputs.exitcode == 1
+        env:
+          STDOUT: "```\n${{ steps.test.outputs.build }}\n```"
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "#### `yarn build` failed\n" + process.env.STDOUT
+            })
