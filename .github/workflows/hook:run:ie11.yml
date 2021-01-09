@@ -1,0 +1,37 @@
+name: hook:run:ie11
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  run-ie11:
+    if: contains(github.event.comment.html_url, '/pull/') && startsWith(github.event.comment.body, '/run:ie11')
+    runs-on: ubuntu-latest
+    steps:
+      - name: get upstream branch
+        id: upstreambranch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "::set-output name=branchname::$(curl -H "Authorization: token ${GITHUB_TOKEN}" ${{ github.event.issue.pull_request.url }} | jq '.head.ref' | sed 's/\"//g')"
+      - name: Checkout upstream repo
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.upstreambranch.outputs.branchname }}
+      - run: node test.js
+      - name: plan success message
+        uses: actions/github-script@0.9.0
+        if: steps.plan.outputs.exitcode == 0
+        env:
+          STDOUT: "```${{ steps.plan.outputs.stdout }}```"
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "#### `echo test` Success\n" + process.env.STDOUT
+            })
+
